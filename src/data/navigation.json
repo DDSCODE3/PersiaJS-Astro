@@ -21,6 +21,11 @@
       "external": false
     },
     {
+      "label": "Articles",
+      "href": "/articles",
+      "external": false
+    },
+    {
       "label": "FAQ",
       "href": "#faq",
       "external": false

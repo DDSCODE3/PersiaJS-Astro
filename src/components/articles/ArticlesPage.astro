@@ -1,0 +1,195 @@
+---
+import "../../styles/article.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer.astro";
+import Container from "../layout/Container.astro";
+import SectionTitle from "../ui/SectionTitle.astro";
+import ArticleCard from "./ArticleCard.astro";
+import { ui, type Article, type Lang } from "../../utils/articles";
+
+interface Props {
+  lang: Lang;
+  articles: Article[];
+}
+
+const { lang, articles } = Astro.props;
+const t = ui[lang];
+const dir = lang === "fa" ? "rtl" : "ltr";
+
+const tags = [...new Set(articles.flatMap((a) => a.data.tags))].sort((a, b) =>
+  a.localeCompare(b)
+);
+
+const chip =
+  "px-4 py-2 rounded-full text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:border-orange-300 hover:text-[#FF4500] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#FF4500] focus:ring-offset-2 data-[active=true]:bg-[#FF4500] data-[active=true]:text-white data-[active=true]:border-[#FF4500]";
+---
+
+<BaseLayout
+  lang={lang}
+  dir="ltr"
+  title={`${t.title} | PersiaJS`}
+  description={t.subtitle}
+>
+  <Fragment slot="head">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </Fragment>
+
+  <div class="min-h-screen bg-gray-50">
+    <Header client:load currentPath={Astro.url.pathname} />
+    <section class="py-20 md:py-32">
+      <Container>
+        <div
+          data-articles
+          data-prev={t.prev}
+          data-next={t.next}
+          dir={dir}
+          lang={lang}
+          class={lang === "fa" ? "font-fa" : ""}
+        >
+          <SectionTitle label={t.label} title={t.title} subtitle={t.subtitle} />
+
+          <div class="max-w-5xl mx-auto mb-10 space-y-6">
+            <input
+              data-search
+              type="search"
+              placeholder={t.search}
+              aria-label={t.search}
+              class="w-full rounded-xl border border-gray-200 bg-white px-5 py-3 text-base text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF4500] focus:border-transparent"
+            />
+            <div class="flex flex-wrap justify-center gap-2">
+              <button type="button" data-tag="" data-active="true" class={chip}>
+                {t.all}
+              </button>
+              {
+                tags.map((tag) => (
+                  <button type="button" data-tag={tag} class={chip}>
+                    <bdi dir="ltr">#{tag}</bdi>
+                  </button>
+                ))
+              }
+            </div>
+            <p class="text-center">
+              <a
+                href={t.switchHref}
+                class="text-sm font-semibold text-[#FF4500] hover:text-[#FF5414] underline"
+                >{t.switchLang}</a
+              >
+            </p>
+          </div>
+
+          <div
+            data-grid
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {articles.map((article) => <ArticleCard article={article} />)}
+          </div>
+
+          <p
+            data-empty
+            class={`${articles.length ? "hidden" : ""} text-center text-gray-600 text-lg py-16`}
+          >
+            {t.empty}
+          </p>
+
+          <nav
+            data-pager
+            class="mt-10 flex flex-wrap justify-center gap-2"
+            aria-label="Pagination"
+          >
+          </nav>
+        </div>
+      </Container>
+    </section>
+    <Footer />
+  </div>
+</BaseLayout>
+
+<script>
+  const PAGE_SIZE = 9;
+
+  const root = document.querySelector<HTMLElement>("[data-articles]");
+  if (root) {
+    const cards = [...root.querySelectorAll<HTMLElement>("[data-card]")];
+    const input = root.querySelector<HTMLInputElement>("[data-search]")!;
+    const chips = [...root.querySelectorAll<HTMLButtonElement>("button[data-tag]")];
+    const pager = root.querySelector<HTMLElement>("[data-pager]")!;
+    const empty = root.querySelector<HTMLElement>("[data-empty]")!;
+
+    const params = new URLSearchParams(location.search);
+    let tag = params.get("tag") ?? "";
+    let query = (params.get("q") ?? "").toLowerCase();
+    let page = 1;
+    input.value = params.get("q") ?? "";
+
+    const pagerBtn =
+      "min-w-10 h-10 px-3 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:border-orange-300 hover:text-[#FF4500] disabled:opacity-40 disabled:pointer-events-none data-[active=true]:bg-[#FF4500] data-[active=true]:text-white data-[active=true]:border-[#FF4500]";
+
+    function addPagerButton(label: string, target: number, opts: { active?: boolean; disabled?: boolean } = {}) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.className = pagerBtn;
+      if (opts.active) b.dataset.active = "true";
+      b.disabled = !!opts.disabled;
+      b.addEventListener("click", () => {
+        page = target;
+        render();
+        root!.scrollIntoView({ behavior: "smooth" });
+      });
+      pager.appendChild(b);
+    }
+
+    function render() {
+      const matches = cards.filter((card) => {
+        const tagOk = !tag || (card.dataset.tags ?? "").split("|").includes(tag);
+        const queryOk = !query || (card.dataset.search ?? "").includes(query);
+        return tagOk && queryOk;
+      });
+
+      const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
+      page = Math.min(page, pages);
+      const start = (page - 1) * PAGE_SIZE;
+      const visible = new Set(matches.slice(start, start + PAGE_SIZE));
+      cards.forEach((card) => card.classList.toggle("hidden", !visible.has(card)));
+      empty.classList.toggle("hidden", matches.length > 0);
+
+      chips.forEach((chip) => {
+        chip.dataset.active = String((chip.dataset.tag ?? "") === tag);
+      });
+
+      pager.replaceChildren();
+      if (pages > 1) {
+        addPagerButton(root!.dataset.prev ?? "Previous", page - 1, { disabled: page === 1 });
+        for (let i = 1; i <= pages; i++) {
+          addPagerButton(String(i), i, { active: i === page });
+        }
+        addPagerButton(root!.dataset.next ?? "Next", page + 1, { disabled: page === pages });
+      }
+
+      const next = new URLSearchParams();
+      if (tag) next.set("tag", tag);
+      if (query) next.set("q", input.value);
+      const qs = next.toString();
+      history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
+    }
+
+    input.addEventListener("input", () => {
+      query = input.value.trim().toLowerCase();
+      page = 1;
+      render();
+    });
+    chips.forEach((chip) =>
+      chip.addEventListener("click", () => {
+        tag = chip.dataset.tag ?? "";
+        page = 1;
+        render();
+      })
+    );
+
+    render();
+  }
+</script>

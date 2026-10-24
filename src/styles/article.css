@@ -1,0 +1,112 @@
+/* Persian text uses Vazirmatn, code always uses a monospace font */
+.font-fa {
+  font-family: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+}
+
+.article-body {
+  font-size: 1.125rem;
+  line-height: 1.9;
+  color: #374151;
+  overflow-wrap: break-word;
+}
+[lang="fa"] .article-body {
+  line-height: 2.1;
+}
+.article-body > * + * {
+  margin-top: 1.25rem;
+}
+.article-body h2,
+.article-body h3 {
+  color: #111827;
+  font-weight: 700;
+  line-height: 1.4;
+  scroll-margin-top: 6rem;
+}
+.article-body h2 {
+  font-size: 1.75rem;
+  margin-top: 2.75rem;
+}
+.article-body h3 {
+  font-size: 1.35rem;
+  margin-top: 2rem;
+}
+.article-body ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+}
+.article-body ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+}
+.article-body li + li {
+  margin-top: 0.5rem;
+}
+.article-body a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.article-body a:hover {
+  color: var(--primary-hover);
+}
+.article-body strong {
+  color: #111827;
+}
+.article-body blockquote {
+  border-inline-start: 4px solid var(--primary);
+  background: #fff7ed;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  color: #4b5563;
+}
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+.article-body hr {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 2.5rem 0;
+}
+.article-body table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+.article-body th,
+.article-body td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Code: always left-to-right, even inside Persian (RTL) articles */
+.article-body pre {
+  direction: ltr;
+  text-align: left;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+.article-body pre code {
+  direction: ltr;
+  text-align: left;
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  padding: 0;
+}
+.article-body :not(pre) > code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, Consolas, monospace;
+  font-size: 0.9em;
+  background: #f3f4f6;
+  color: #c2410c;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.375rem;
+}

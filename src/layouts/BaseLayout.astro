@@ -5,7 +5,9 @@ interface Props {
   title?: string;
   description?: string;
   lang?: "en" | "fa";
+  dir?: "ltr" | "rtl";
   image?: string;
+  type?: "website" | "article";
 }
 
 const {
@@ -13,9 +15,21 @@ const {
   description = "Join PersiaJS, a thriving community of Persian-speaking developers. Share knowledge, attend events, and grow your skills in JavaScript and web development.",
   lang = "en",
   image = "/logo.png",
+  type = "website",
 } = Astro.props;
 
-const dir = lang === "fa" ? "rtl" : "ltr";
+// Pages can force a direction (article pages keep the site chrome LTR
+// and set RTL only on the article container)
+const dir = Astro.props.dir ?? (lang === "fa" ? "rtl" : "ltr");
+
+// Canonical + absolute image URLs only work once `site` is set in astro.config.mjs
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).href
+  : undefined;
+const ogImage =
+  Astro.site && !image.startsWith("http")
+    ? new URL(image, Astro.site).href
+    : image;
 ---
 
 <!doctype html>
@@ -33,15 +47,17 @@ const dir = lang === "fa" ? "rtl" : "ltr";
     <meta name="author" content="PersiaJS Team" />
     <meta name="theme-color" content="#F59E0B" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {canonical && <link rel="canonical" href={canonical} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={ogImage} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={image} />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,6 +65,7 @@ const dir = lang === "fa" ? "rtl" : "ltr";
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
+    <slot name="head" />
   </head>
   <body>
     <slot />

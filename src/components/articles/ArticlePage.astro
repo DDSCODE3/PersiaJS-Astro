@@ -1,0 +1,276 @@
+---
+import "../../styles/article.css";
+import { Image, getImage } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer.astro";
+import Container from "../layout/Container.astro";
+import Button from "../ui/Button.astro";
+import {
+  articlesBase,
+  formatDate,
+  formatNumber,
+  getReadingMinutes,
+  ui,
+  type Article,
+} from "../../utils/articles";
+
+interface Props {
+  entry: Article;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { entry, headings } = Astro.props;
+const d = entry.data;
+const lang = d.lang;
+const t = ui[lang];
+const dir = lang === "fa" ? "rtl" : "ltr";
+const base = articlesBase(lang);
+const minutes = getReadingMinutes(entry.body);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const origin = Astro.site ?? Astro.url;
+const url = new URL(Astro.url.pathname, origin).href;
+
+// JPG cover for link previews (LinkedIn and Telegram read it most reliably)
+let ogImage: string | undefined;
+if (d.coverImage) {
+  const og = await getImage({ src: d.coverImage, width: 1200, height: 630, format: "jpg" });
+  ogImage = new URL(og.src, origin).href;
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: d.title,
+  description: d.description,
+  inLanguage: lang,
+  datePublished: d.pubDate.toISOString(),
+  dateModified: (d.updatedDate ?? d.pubDate).toISOString(),
+  keywords: d.tags.join(", "),
+  mainEntityOfPage: url,
+  ...(ogImage ? { image: ogImage } : {}),
+  author: {
+    "@type": "Person",
+    name: d.author,
+    ...(d.authorLinkedIn ? { url: d.authorLinkedIn } : {}),
+  },
+  publisher: { "@type": "Organization", name: "PersiaJS" },
+};
+---
+
+<BaseLayout
+  lang={lang}
+  dir="ltr"
+  type="article"
+  title={`${d.title} | PersiaJS`}
+  description={d.description}
+  image={ogImage}
+>
+  <Fragment slot="head">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <meta property="article:published_time" content={d.pubDate.toISOString()} />
+    {
+      d.updatedDate && (
+        <meta
+          property="article:modified_time"
+          content={d.updatedDate.toISOString()}
+        />
+      )
+    }
+    {d.tags.map((tag) => <meta property="article:tag" content={tag} />)}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <div class="min-h-screen bg-white">
+    <Header client:load currentPath={Astro.url.pathname} />
+    <main class="pt-28 pb-20">
+      <Container>
+        <div dir={dir} lang={lang} class={lang === "fa" ? "font-fa" : ""}>
+          <div class="max-w-3xl mx-auto">
+            <a
+              href={base}
+              class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-[#FF4500] transition-colors duration-300 mb-6"
+            >
+              <span aria-hidden="true">{lang === "fa" ? "→" : "←"}</span>
+              {t.back}
+            </a>
+
+            <div class="flex flex-wrap gap-2 mb-4">
+              {
+                d.tags.map((tag) => (
+                  <a
+                    href={`${base}?tag=${encodeURIComponent(tag)}`}
+                    class="text-xs font-semibold text-orange-600 bg-orange-100 px-3 py-1 rounded-full hover:bg-orange-200 transition-colors duration-300"
+                  >
+                    <bdi dir="ltr">#{tag}</bdi>
+                  </a>
+                ))
+              }
+            </div>
+
+            <h1
+              class="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-6"
+            >
+              {d.title}
+            </h1>
+
+            <div
+              class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mb-8"
+            >
+              {
+                d.authorLinkedIn ? (
+                  <a
+                    href={d.authorLinkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="font-semibold text-gray-900 hover:text-[#FF4500]"
+                  >
+                    {d.author}
+                  </a>
+                ) : (
+                  <span class="font-semibold text-gray-900">{d.author}</span>
+                )
+              }
+              <span aria-hidden="true">•</span>
+              <time datetime={d.pubDate.toISOString()}
+                >{formatDate(d.pubDate, lang)}</time
+              >
+              {
+                d.updatedDate && (
+                  <>
+                    <span aria-hidden="true">•</span>
+                    <span>
+                      {t.updated}: {formatDate(d.updatedDate, lang)}
+                    </span>
+                  </>
+                )
+              }
+              <span aria-hidden="true">•</span>
+              <span>{formatNumber(minutes, lang)} {t.minutes}</span>
+            </div>
+          </div>
+
+          {
+            d.coverImage && (
+              <div class="max-w-4xl mx-auto mb-12">
+                <Image
+                  src={d.coverImage}
+                  alt={d.title}
+                  width={1200}
+                  format="webp"
+                  loading="eager"
+                  class="w-full h-auto rounded-2xl shadow-lg"
+                />
+              </div>
+            )
+          }
+
+          <div
+            class="max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_16rem] gap-10"
+          >
+            <article class="article-body min-w-0 max-w-3xl w-full mx-auto">
+              <slot />
+            </article>
+
+            {
+              toc.length > 0 && (
+                <aside class="order-first lg:order-none">
+                  <nav
+                    data-toc
+                    aria-label={t.toc}
+                    class="lg:sticky lg:top-28 rounded-2xl border border-gray-200 bg-gray-50 p-5"
+                  >
+                    <p class="font-bold text-gray-900 mb-3">{t.toc}</p>
+                    <ul class="space-y-2 text-sm">
+                      {toc.map((h) => (
+                        <li class={h.depth === 3 ? "ps-4" : ""}>
+                          <a
+                            href={`#${h.slug}`}
+                            data-toc-link
+                            class="block text-gray-600 hover:text-[#FF4500] transition-colors duration-300 data-[active=true]:text-[#FF4500] data-[active=true]:font-semibold"
+                          >
+                            {h.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                </aside>
+              )
+            }
+          </div>
+
+          <div class="max-w-3xl mx-auto mt-16 space-y-6">
+            <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6">
+              <p class="font-bold text-gray-900 mb-1">{t.aboutAuthor}</p>
+              <p class="text-lg font-semibold text-gray-900">{d.author}</p>
+              {d.authorBio && <p class="text-gray-700 mt-2 leading-relaxed">{d.authorBio}</p>}
+              {
+                d.authorLinkedIn && (
+                  <a
+                    href={d.authorLinkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block mt-3 text-[#FF4500] hover:text-[#FF5414] font-semibold underline"
+                  >
+                    {t.linkedinProfile}
+                  </a>
+                )
+              }
+            </div>
+
+            {
+              (d.linkedinUrl || d.telegramUrl) && (
+                <div class="rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-red-50 p-6">
+                  <p class="font-bold text-gray-900 mb-4">{t.discuss}</p>
+                  <div class="flex flex-wrap gap-3">
+                    {d.linkedinUrl && (
+                      <Button href={d.linkedinUrl} target="_blank" rel="noopener noreferrer" variant="primary" size="sm">
+                        {t.onLinkedIn}
+                      </Button>
+                    )}
+                    {d.telegramUrl && (
+                      <Button href={d.telegramUrl} target="_blank" rel="noopener noreferrer" variant="outline" size="sm">
+                        {t.onTelegram}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </Container>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>
+
+<script>
+  // Highlight the table-of-contents link of the heading being read
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]")];
+  const headings = links
+    .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+    .filter((el): el is HTMLElement => !!el);
+
+  if (headings.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          links.forEach((a) => {
+            a.dataset.active = String(
+              decodeURIComponent(a.hash.slice(1)) === entry.target.id
+            );
+          });
+        });
+      },
+      { rootMargin: "-100px 0px -70% 0px" }
+    );
+    headings.forEach((h) => observer.observe(h));
+  }
+</script>

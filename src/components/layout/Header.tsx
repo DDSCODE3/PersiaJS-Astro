@@ -27,6 +27,7 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
           // Detect active section with improved logic
           const sections = navigation.links
             .map((link) => {
+              if (!link.href.startsWith("#")) return null;
               const element = document.querySelector(link.href);
               return element && element instanceof HTMLElement
                 ? { element, href: link.href, offsetTop: element.offsetTop }
@@ -113,6 +114,13 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
   const handleLinkClick = useCallback(
     (href: string) => {
       setIsMobileMenuOpen(false);
+
+      // Normal page links (like /articles) just navigate
+      if (!href.startsWith("#")) {
+        window.location.href = href;
+        return;
+      }
+
       setActiveSection(href);
 
       // Special handling for events - navigate to /events/:slug route
@@ -212,7 +220,9 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-2">
               {navigation.links.map((link) => {
-                const isActive = activeSection === link.href;
+                const isActive = link.href.startsWith("#")
+                  ? activeSection === link.href
+                  : currentPath.includes(link.href);
                 return (
                   <a
                     key={link.href}
@@ -341,7 +351,9 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
               aria-label="Mobile navigation"
             >
               {navigation.links.map((link, index) => {
-                const isActive = activeSection === link.href;
+                const isActive = link.href.startsWith("#")
+                  ? activeSection === link.href
+                  : currentPath.includes(link.href);
                 return (
                   <a
                     key={link.href}

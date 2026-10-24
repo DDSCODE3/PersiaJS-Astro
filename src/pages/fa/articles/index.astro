@@ -1,0 +1,8 @@
+---
+import ArticlesPage from "../../../components/articles/ArticlesPage.astro";
+import { getArticles } from "../../../utils/articles";
+
+const articles = await getArticles("fa");
+---
+
+<ArticlesPage lang="fa" articles={articles} />
