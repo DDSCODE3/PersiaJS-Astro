@@ -1,0 +1,90 @@
+---
+import Container from "../layout/Container.astro";
+import SectionTitle from "../ui/SectionTitle.astro";
+import faqData from "../../data/faq.json";
+import type { FAQItem } from "../../types";
+
+const faq = faqData as { items: FAQItem[] };
+---
+
+<section id="faq" class="py-20 md:py-32 bg-white">
+  <Container>
+    <SectionTitle
+      label="FAQ"
+      title="Frequently Asked Questions"
+      subtitle="Everything you need to know about PersiaJS"
+    />
+    <div class="max-w-3xl mx-auto space-y-4">
+      {
+        faq.items.map((item, index) => (
+          // name="faq" makes the browser keep only one item open at a time
+          <details
+            name="faq"
+            class="bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-orange-200 hover:shadow-lg"
+          >
+            <summary class="group/q w-full px-6 md:px-8 py-5 md:py-6 text-left flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-orange-50/50 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4500] focus-visible:ring-offset-2">
+              <div class="flex items-start space-x-3 md:space-x-4 flex-1">
+                <div class="faq-badge flex-shrink-0 w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 bg-gray-100 text-gray-600 group-hover/q:bg-orange-100 group-hover/q:text-orange-600">
+                  {index + 1}
+                </div>
+                <span class="font-semibold text-gray-900 pr-4 text-base md:text-lg group-hover/q:text-orange-600 transition-colors duration-300">
+                  {item.question}
+                </span>
+              </div>
+
+              <svg
+                class="faq-chevron w-5 h-5 md:w-6 md:h-6 text-orange-600 flex-shrink-0 transition-transform duration-300"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+
+            <div class="px-6 md:px-8 py-5 md:py-6 bg-gradient-to-br from-orange-50/50 to-transparent border-t border-orange-100">
+              <p class="text-gray-700 leading-relaxed text-base md:text-lg">
+                {item.answer}
+              </p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </Container>
+</section>
+
+<style>
+  /* Open state: numbered badge turns orange and the arrow flips */
+  details[open] .faq-badge {
+    background-image: linear-gradient(
+      to bottom right,
+      var(--color-orange-500),
+      var(--color-red-600)
+    );
+    color: #fff;
+    box-shadow: var(--shadow-md);
+  }
+  details[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Smooth open/close in browsers that support it (others open instantly) */
+  details {
+    interpolate-size: allow-keywords;
+  }
+  details::details-content {
+    height: 0;
+    overflow: clip;
+    transition:
+      height 0.3s ease,
+      content-visibility 0.3s allow-discrete;
+  }
+  details[open]::details-content {
+    height: auto;
+  }
+</style>

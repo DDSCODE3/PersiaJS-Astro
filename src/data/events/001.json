@@ -1,0 +1,128 @@
+{
+  "title": "PersiaJS December 2025: Design Systems & Web Components",
+  "slug": "persiajs-december-2025-design-systems-web-components",
+  "date": "December 1st, 2025",
+  "time": "6:00 PM - 8:30 PM GMT (UK Time)",
+  "location": "Online",
+  "platform": "Twitch",
+  "lumaLink": "https://luma.com/rlbqpett",
+  "description": "Join us for an exciting evening of technical talks and insights! This month's PersiaJS event brings together community experts to share their knowledge on design systems, web components, and engineering productivity. From building scalable frontend architectures to applying ancient wisdom for modern developer excellence, our speakers will cover both technical practices and holistic approaches to engineering. The event will be streamed live on Twitch, so join us there to participate in real-time discussions and Q&A sessions.",
+  "highlights": [
+    "Deep dives into design system implementation strategies",
+    "Hands-on insights into modern web components",
+    "Ancient Japanese philosophy applied to engineering productivity",
+    "Physiology and psychology for peak performance",
+    "Q&A sessions with experienced speakers",
+    "Networking opportunities with the PersiaJS community",
+    "Live streaming on Twitch",
+    "Live recording available on our YouTube channel"
+  ],
+  "agenda": [
+    {
+      "time": "6:00 PM",
+      "title": "Welcome & Community Introduction",
+      "type": "intro",
+      "items": [
+        "PersiaJS community overview",
+        "Event introductions",
+        "How to participate and ask questions"
+      ]
+    },
+    {
+      "time": "6:10 PM",
+      "title": "How to Implement Design Systems",
+      "type": "talk",
+      "speaker": "Ehsan Gazar",
+      "abstract": "Learn the fundamentals of creating and maintaining design systems that scale. This talk will cover best practices, common pitfalls, and practical strategies for implementing design systems in your organization. We'll explore tools, processes, and methodologies that help teams work more efficiently while maintaining design consistency."
+    },
+    {
+      "time": "6:40 PM",
+      "title": "Web Components",
+      "type": "talk",
+      "speaker": "Ali Parvizi",
+      "abstract": "Dive into the world of web components and discover how to build reusable, framework-agnostic UI elements. This session will cover the Web Components API, Shadow DOM, Custom Elements, and how to create components that work across different frameworks and libraries. Perfect for developers looking to build future-proof component libraries."
+    },
+    {
+      "time": "7:10 PM",
+      "title": "Break & Networking",
+      "type": "break",
+      "items": [
+        "10-minute break",
+        "Community networking and discussion",
+        "Q&A preparation"
+      ]
+    },
+    {
+      "time": "7:20 PM",
+      "title": "The Warrior's Way: Ancient Japanese Philosophy for Modern Engineering Productivity",
+      "type": "talk",
+      "speaker": "Ali Ahmadi",
+      "abstract": "Discover how ancient Japanese mental models—from Zanshin (remaining mind) to Kaizen (continuous improvement)—can transform your engineering practice and life quality. This talk explores the intersection of physiology, psychology, and sports science, showing how concepts like Mushin (no-mind), Fudoshin (immovable mind), and Shoshin (beginner's mind) can help engineers achieve peak performance, better focus, and sustainable productivity. Learn practical strategies for applying these timeless philosophies to modern software development."
+    },
+    {
+      "time": "7:50 PM",
+      "title": "Q&A Panel Session",
+      "type": "qa",
+      "items": [
+        "Open discussion with all speakers",
+        "Audience questions and answers",
+        "Community insights and best practices sharing"
+      ]
+    },
+    {
+      "time": "8:20 PM",
+      "title": "Closing Remarks & Next Steps",
+      "type": "closing",
+      "items": [
+        "Thank yous to speakers and attendees",
+        "Upcoming events and announcements",
+        "Community calls to action",
+        "Recording information"
+      ]
+    }
+  ],
+  "speakers": [
+    {
+      "name": "Ehsan Gazar",
+      "title": "Co-Founder, PersiaJS",
+      "bio": "Ehsan is a passionate developer and community builder with extensive experience in frontend development and design systems. As a co-founder of PersiaJS, he's dedicated to empowering the Persian-speaking developer community through knowledge sharing and collaboration.",
+      "linkedin": "https://www.linkedin.com/in/gazar/",
+      "topic": "How to Implement Design Systems"
+    },
+    {
+      "name": "Ali Parvizi",
+      "title": "Software Engineer",
+      "bio": "Ali is an experienced software engineer specializing in modern web technologies and component architecture. With a strong focus on building scalable and maintainable applications, he brings practical insights from real-world projects.",
+      "linkedin": "https://www.linkedin.com/in/ali-parvizi/",
+      "topic": "Web Components"
+    },
+    {
+      "name": "Ali Ahmadi",
+      "title": "Software Engineer",
+      "bio": "Ali is a software engineer passionate about productivity, wellness, and personal development. He explores the intersection of ancient wisdom and modern science to help engineers achieve peak performance and better life quality through practical mental models and physiological practices.",
+      "linkedin": "https://www.linkedin.com/in/ali-ahmadi/",
+      "topic": "The Warrior's Way: Ancient Japanese Philosophy for Modern Engineering Productivity"
+    }
+  ],
+  "topics": [
+    "Design system architecture and implementation",
+    "Component-based development patterns",
+    "Web Components API and standards",
+    "Shadow DOM and Custom Elements",
+    "Cross-framework component development",
+    "Design system tooling and workflows",
+    "Best practices for scalable UI development",
+    "Japanese mental models for productivity (Zanshin, Mushin, Fudoshin)",
+    "Kaizen and continuous improvement in engineering",
+    "Physiology and psychology for peak performance",
+    "Work-life balance and sustainable productivity"
+  ],
+  "eventDetails": {
+    "language": "Persian / English (Bilingual)",
+    "level": "Intermediate to Advanced (all levels welcome)",
+    "cost": "Free",
+    "format": "Online via Twitch livestream",
+    "capacity": "Unlimited (online event)",
+    "recording": "Yes - Event will be recorded and available on our YouTube channel"
+  }
+}

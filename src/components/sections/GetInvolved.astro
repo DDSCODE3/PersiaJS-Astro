@@ -1,0 +1,53 @@
+---
+import Container from "../layout/Container.astro";
+import SectionTitle from "../ui/SectionTitle.astro";
+import ActionCardComponent from "../cards/ActionCard.astro";
+import socialData from "../../data/social.json";
+import type { ActionCard } from "../../types";
+
+const social = socialData as {
+  speakerApplicationForm: string;
+  sponsorForm: string;
+};
+
+const actionCards: ActionCard[] = [
+  {
+    id: "become-speaker",
+    icon: "microphone",
+    title: "Become a Speaker",
+    description: "Share your knowledge",
+    buttonText: "Apply to speak",
+    buttonLink: social.speakerApplicationForm,
+  },
+  {
+    id: "become-sponsor",
+    icon: "lightning",
+    title: "Become a Sponsor",
+    description:
+      "Support the community and reach a highly engaged audience of developers",
+    buttonText: "Sponsor PersiaJS",
+    buttonLink: social.sponsorForm,
+  },
+];
+---
+
+<section id="get-involved" class="py-20 md:py-32 bg-white">
+  <Container>
+    <SectionTitle
+      label="GET INVOLVED"
+      title="Join the PersiaJS Community"
+      subtitle="Help us grow and make a difference in the Persian-speaking developer community"
+    />
+
+    <!-- Action Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+      {
+        actionCards.map((card) => (
+          <div class="h-full">
+            <ActionCardComponent card={card} />
+          </div>
+        ))
+      }
+    </div>
+  </Container>
+</section>

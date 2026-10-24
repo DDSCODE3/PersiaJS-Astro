@@ -1,0 +1,52 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  subtitle?: string;
+  class?: string;
+}
+
+const { label, title, subtitle, class: className = "" } = Astro.props;
+
+const highlightWords = ["JS", "JavaScript", "PersiaJS", "Team", "Community"];
+const words = title.split(" ").map((word) => ({
+  word,
+  highlight: highlightWords.some((hw) => word.includes(hw)),
+}));
+---
+
+<div class={`text-center mb-12 md:mb-16 ${className}`}>
+  {
+    label && (
+      <div class="inline-block mb-4">
+        <span class="text-orange-600 font-bold text-sm uppercase tracking-wider bg-orange-100 px-4 py-2 rounded-full shadow-sm">
+          {label}
+        </span>
+      </div>
+    )
+  }
+  <h2
+    class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+  >
+    {
+      words.map(({ word, highlight }) =>
+        highlight ? (
+          <span class="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+            {word}{" "}
+          </span>
+        ) : (
+          <span>
+            {word}{" "}
+          </span>
+        )
+      )
+    }
+  </h2>
+  {
+    subtitle && (
+      <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mt-4">
+        {subtitle}
+      </p>
+    )
+  }
+</div>

@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/layout/Header";
+import ScrollProgress from "../components/ui/ScrollProgress";
+import Footer from "../components/layout/Footer.astro";
+import Hero from "../components/sections/Hero.astro";
+import About from "../components/sections/About.astro";
+import EventsTile from "../components/sections/EventsTile.astro";
+import Speakers from "../components/sections/Speakers.astro";
+import GetInvolved from "../components/sections/GetInvolved.astro";
+import Team from "../components/sections/Team.astro";
+import FAQ from "../components/sections/FAQ.astro";
+import Community from "../components/sections/Community.astro";
+---
+
+<BaseLayout>
+  <ScrollProgress client:load />
+  <Header client:load currentPath="/" />
+
+  <main>
+    <Hero />
+    <About />
+    <EventsTile />
+    <Speakers />
+    <GetInvolved />
+    <Team />
+    <FAQ />
+    <Community />
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,157 @@
+---
+import socialData from "../../data/social.json";
+import navigationData from "../../data/navigation.json";
+import SocialIcon from "../ui/SocialIcon.astro";
+import type { SocialLink, NavLink } from "../../types";
+
+const social = socialData as { links: SocialLink[] };
+const navigation = navigationData as { links: NavLink[] };
+
+const currentYear = new Date().getFullYear();
+
+// "/#team" works from every page, not only from the home page
+const aboutLinks = navigation.links.filter(
+  (link) => link.label === "The Team" || link.label === "Speakers"
+);
+
+const linkClass =
+  "text-gray-400 hover:text-orange-500 transition-colors duration-300 ease-out flex items-center group";
+const arrowClass =
+  "mr-2 opacity-0 group-hover:opacity-100 transition-opacity";
+const underlineClass =
+  "absolute bottom-0 left-0 w-12 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full";
+---
+
+<footer
+  class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-300 overflow-hidden"
+>
+  <!-- Decorative Elements -->
+  <div class="absolute inset-0 opacity-5">
+    <div
+      class="absolute top-10 right-10 w-96 h-96 bg-orange-500 rounded-full blur-3xl"
+    >
+    </div>
+    <div
+      class="absolute bottom-10 left-10 w-72 h-72 bg-red-500 rounded-full blur-3xl"
+    >
+    </div>
+  </div>
+
+  <div class="relative container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <!-- Logo and Description -->
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center space-x-3 mb-6">
+          <img
+            src="/logo.png"
+            alt="PersiaJS Logo"
+            class="h-12 w-12 object-contain"
+          />
+          <div class="flex flex-col">
+            <span class="font-bold text-2xl text-white font-heading">
+              PersiaJS
+            </span>
+            <span class="text-sm text-gray-400">Developer Community</span>
+          </div>
+        </div>
+        <p class="text-gray-400 max-w-md leading-relaxed mb-6">
+          Empowering the Persian-speaking Developer Community through knowledge
+          sharing, collaboration, and innovation in the world of JavaScript and
+          beyond.
+        </p>
+
+        <!-- Social Links -->
+        <div class="flex space-x-3">
+          {
+            social.links.map((link) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gradient-to-br hover:from-orange-500 hover:to-red-600 transition-all duration-300 hover:scale-110 hover:shadow-lg group"
+                aria-label={link.platform}
+              >
+                <SocialIcon
+                  platform={link.icon || "linkedin"}
+                  class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
+                />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- About Links -->
+      <div>
+        <h3 class="text-white font-bold text-lg mb-6 relative inline-block">
+          About
+          <span class={underlineClass}></span>
+        </h3>
+        <ul class="space-y-3">
+          {
+            aboutLinks.map((link) => (
+              <li>
+                <a href={`/${link.href}`} class={linkClass}>
+                  <span class={arrowClass}>→</span>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Resources Links -->
+      <div>
+        <h3 class="text-white font-bold text-lg mb-6 relative inline-block">
+          Resources
+          <span class={underlineClass}></span>
+        </h3>
+        <ul class="space-y-3">
+          <li>
+            <a href="/#faq" class={linkClass}>
+              <span class={arrowClass}>→</span>
+              FAQ
+            </a>
+          </li>
+          <li>
+            <a href="/terms" class={linkClass}>
+              <span class={arrowClass}>→</span>
+              Terms &amp; Conditions
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="border-t border-gray-800 pt-8">
+      <div
+        class="flex flex-col md:flex-row justify-between items-center gap-4"
+      >
+        <div class="text-sm text-gray-500 text-center md:text-left">
+          <p>© {currentYear} PersiaJS. All rights reserved.</p>
+          <p class="mt-1">
+            Designed &amp; Developed with <span class="text-orange-500">❤️</span>{" "}
+            by Ruhollah Hosseini
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-2 text-sm text-gray-500">
+          <span>Made with</span>
+          <svg
+            class="w-4 h-4 text-orange-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span>&amp; JavaScript</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
