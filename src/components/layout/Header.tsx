@@ -23,11 +23,27 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const isHomePage = currentPath === "/";
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const homePath = `${base}/`;
 
-  // On other pages, section links must point to the home page (/#about)
-  const navHref = (href: string) =>
-    href.startsWith("#") && !isHomePage ? `/${href}` : href;
+const normalizePath = (path: string) =>
+  path.replace(/\/+$/, "") || "/";
+
+const isHomePage =
+  normalizePath(currentPath) === "/" ||
+  normalizePath(currentPath) === normalizePath(base);
+
+const navHref = (href: string) => {
+  if (href.startsWith("#")) {
+    return isHomePage ? href : `${homePath}${href}`;
+  }
+
+  if (href.startsWith("/")) {
+    return href === "/" ? homePath : `${base}${href}`;
+  }
+
+  return href;
+};
 
   // A section to scroll to after the mobile menu has released its scroll lock
   const pendingScroll = useRef<string | null>(null);
@@ -138,40 +154,35 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
     };
   }, [isMobileMenuOpen]);
 
-  const handleLinkClick = useCallback(
-    (href: string) => {
-      setIsMobileMenuOpen(false);
+const handleLinkClick = useCallback(
+  (href: string) => {
+    setIsMobileMenuOpen(false);
 
-      // Normal page links (like /articles) just navigate
-      if (!href.startsWith("#")) {
-        window.location.href = href;
-        return;
-      }
+    if (!href.startsWith("#")) {
+      window.location.href = navHref(href);
+      return;
+    }
 
-      setActiveSection(href);
+    setActiveSection(href);
 
-      // Events: from other pages go to the event page
-      if (href === "#events" && !isHomePage) {
-        window.location.href = `/events/${EVENT_SLUG}`;
-        return;
-      }
+    if (href === "#events" && !isHomePage) {
+      window.location.href = `${base}/events/${EVENT_SLUG}`;
+      return;
+    }
 
-      // Other pages: go to the home page section
-      if (!isHomePage) {
-        window.location.href = `/${href}`;
-        return;
-      }
+    if (!isHomePage) {
+      window.location.href = `${homePath}${href}`;
+      return;
+    }
 
-      // While the mobile menu is open the page is locked (position: fixed),
-      // so scrolling must wait until the lock is released.
-      if (document.body.style.position === "fixed") {
-        pendingScroll.current = href;
-      } else {
-        scrollToSection(href);
-      }
-    },
-    [isHomePage]
-  );
+    if (document.body.style.position === "fixed") {
+      pendingScroll.current = href;
+    } else {
+      scrollToSection(href);
+    }
+  },
+  [isHomePage]
+);
 
   const handleLogoClick = useCallback(
     (e: MouseEvent) => {
@@ -210,7 +221,7 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
             >
               <div className="relative">
                 <img
-                  src="/logo.png"
+                  src={`${base}/logo.png`}
                   alt="PersiaJS"
                   className="h-8 w-8 md:h-10 md:w-10 object-contain transition-transform duration-300 ease-out group-hover:scale-105"
                   loading="eager"

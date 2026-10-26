@@ -38,8 +38,12 @@ export function formatNumber(n: number, lang: Lang): string {
   return new Intl.NumberFormat(locales[lang]).format(n);
 }
 
+const base = import.meta.env.BASE_URL;
+
 export const articlesBase = (lang: Lang) =>
-  lang === "fa" ? "/fa/articles" : "/articles";
+  lang === "fa"
+    ? `${base}/fa/articles`
+    : `${base}/articles`;
 
 export const ui = {
   fa: {
