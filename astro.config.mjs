@@ -8,8 +8,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://persiajs.dev",
-
+  site: "https://ddscode3.github.io",
+  base: "/PersiaJS-Astro",
   integrations: [react(), sitemap()],
 
   markdown: {
