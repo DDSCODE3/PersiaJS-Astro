@@ -1,20 +1,22 @@
-
 // @ts-check
 import { defineConfig } from 'astro/config';
+
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
+
 import tailwindcss from '@tailwindcss/vite';
 
+// https://astro.build/config
 export default defineConfig({
-  site: 'https://ddscode3.github.io',
-  base: '/PersiaJS-Astro',
+  site: "https://persiajs.dev",
 
-  integrations: [react()],
+  integrations: [react(), sitemap()],
 
   markdown: {
-    shikiConfig: { theme: 'github-dark' },
+    shikiConfig: { theme: "github-dark" },
   },
 
   vite: {
-    plugins: [tailwindcss()],
-  },
+    plugins: [tailwindcss()]
+  }
 });

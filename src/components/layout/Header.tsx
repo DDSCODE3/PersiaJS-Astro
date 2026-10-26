@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { MouseEvent } from "react";
 import navigationData from "../../data/navigation.json";
 import type { NavLink } from "../../types";
@@ -6,11 +6,31 @@ import { EVENT_SLUG } from "../../data/events";
 
 const navigation = navigationData as { links: NavLink[] };
 
+// Smooth scroll to a section, leaving room for the fixed header
+function scrollToSection(href: string) {
+  const element = document.querySelector(href);
+  if (!element) return;
+
+  // Header height: 64px (h-16) on mobile, 80px (h-20) on desktop
+  const headerHeight = window.innerWidth >= 768 ? 80 : 64;
+  const elementPosition = element.getBoundingClientRect().top;
+  const offsetPosition = elementPosition + window.scrollY - headerHeight - 10;
+
+  window.scrollTo({ top: Math.max(0, offsetPosition), behavior: "smooth" });
+}
+
 export default function Header({ currentPath = "/" }: { currentPath?: string }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const isHomePage = currentPath === "/";
+
+  // On other pages, section links must point to the home page (/#about)
+  const navHref = (href: string) =>
+    href.startsWith("#") && !isHomePage ? `/${href}` : href;
+
+  // A section to scroll to after the mobile menu has released its scroll lock
+  const pendingScroll = useRef<string | null>(null);
 
   // Throttled scroll handler for better performance
   useEffect(() => {
@@ -101,6 +121,13 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
       if (scrollY) {
         window.scrollTo(0, parseInt(scrollY || "0") * -1);
       }
+
+      // The menu link that was tapped: scroll now that the page can scroll again
+      if (pendingScroll.current) {
+        const target = pendingScroll.current;
+        pendingScroll.current = null;
+        requestAnimationFrame(() => scrollToSection(target));
+      }
     }
 
     return () => {
@@ -123,47 +150,24 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
 
       setActiveSection(href);
 
-      // Special handling for events - navigate to /events/:slug route
-      if (href === "#events") {
-        if (!isHomePage) {
-          window.location.href = `/events/${EVENT_SLUG}`;
-        } else {
-          // Smooth scroll to section with proper header offset
-          const element = document.querySelector(href);
-          if (element) {
-            const headerHeight = window.innerWidth >= 768 ? 80 : 64;
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition =
-              elementPosition + window.scrollY - headerHeight - 10;
-
-            window.scrollTo({
-              top: Math.max(0, offsetPosition),
-              behavior: "smooth",
-            });
-          }
-        }
+      // Events: from other pages go to the event page
+      if (href === "#events" && !isHomePage) {
+        window.location.href = `/events/${EVENT_SLUG}`;
         return;
       }
 
-      // If we're not on the home page and clicking a hash link, navigate to home first
-      if (!isHomePage && href.startsWith("#")) {
+      // Other pages: go to the home page section
+      if (!isHomePage) {
         window.location.href = `/${href}`;
         return;
       }
 
-      // Smooth scroll to section with proper header offset
-      const element = document.querySelector(href);
-      if (element) {
-        // Header height: 64px (h-16) on mobile, 80px (h-20) on desktop
-        const headerHeight = window.innerWidth >= 768 ? 80 : 64;
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition =
-          elementPosition + window.scrollY - headerHeight - 10; // Extra 10px padding
-
-        window.scrollTo({
-          top: Math.max(0, offsetPosition),
-          behavior: "smooth",
-        });
+      // While the mobile menu is open the page is locked (position: fixed),
+      // so scrolling must wait until the lock is released.
+      if (document.body.style.position === "fixed") {
+        pendingScroll.current = href;
+      } else {
+        scrollToSection(href);
       }
     },
     [isHomePage]
@@ -226,7 +230,7 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
                 return (
                   <a
                     key={link.href}
-                    href={link.href}
+                    href={navHref(link.href)}
                     className={`relative px-4 py-2.5 text-sm font-medium transition-all duration-300 ease-out rounded-lg group focus:outline-none focus:ring-2 focus:ring-[#FF4500] focus:ring-offset-2 ${
                       isActive
                         ? "text-[#FF4500] bg-[#fef3c7]/50"
@@ -357,7 +361,7 @@ export default function Header({ currentPath = "/" }: { currentPath?: string }) 
                 return (
                   <a
                     key={link.href}
-                    href={link.href}
+                    href={navHref(link.href)}
                     onClick={(e) => {
                       e.preventDefault();
                       handleLinkClick(link.href);
